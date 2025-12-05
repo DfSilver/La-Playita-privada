@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Para cocinar juntos <3</title>
+  <meta property="og:title" content="Para cocinar juntos <3">
+  <meta property="og:description" content="Para cocinar juntos <3">
+  <meta property="og:type" content="website">
+  <meta name="theme-color" content="#ff6b8a">
+  <style>
+    :root{--fg:#fff;--accent:#ff6b8a}
+    html,body{height:100%}
+    body{margin:0;color:var(--fg);font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif;background:#000;background-image:linear-gradient(rgba(10,10,10,.55), rgba(10,10,10,.55)), url('fondo.jpg');background-position:center;background-size:cover;background-attachment:fixed}
+    .wrap{max-width:820px;margin:0 auto;padding:16px}
+    .panel{background:rgba(0,0,0,.30);border:1px solid rgba(255,255,255,.12);backdrop-filter:blur(8px);border-radius:16px;box-shadow:0 8px 24px rgba(0,0,0,.35);padding:18px}
+    .header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:4px 0 8px}
+    .title{font-size:26px;font-weight:700;letter-spacing:.2px}
+    .title .heart{color:var(--accent)}
+    .desc{font-family:"Great Vibes", cursive;font-size:24px;color:#ffd7df}
+    .actions{display:flex;gap:8px}
+    .btn{appearance:none;border:0;border-radius:12px;padding:10px 14px;background:var(--accent);color:#1b0a0e;font-weight:700;cursor:pointer}
+    .btn.secondary{background:#1a1a1a;color:#fff;border:1px solid #2a2a2a;text-decoration:none;display:inline-flex;align-items:center}
+    .btn.ghost{background:transparent;color:#fff;border:1px solid #2a2a2a}
+    iframe{width:100%;border:0;border-radius:14px}
+    .note{font-size:13px;opacity:.85;padding-top:10px}
+    .hearts{position:fixed;inset:0;pointer-events:none}
+    .hearts span{position:absolute;color:#ff89a6;opacity:.25;font-size:18px;animation:float 10s linear infinite}
+    .hearts span:nth-child(2){left:20%;animation-duration:12s;opacity:.18}
+    .hearts span:nth-child(3){left:40%;animation-duration:14s;opacity:.15}
+    .hearts span:nth-child(4){left:60%;animation-duration:11s;opacity:.2}
+    .hearts span:nth-child(5){left:80%;animation-duration:13s;opacity:.17}
+    @keyframes float{0%{transform:translateY(20px)}50%{transform:translateY(-8px)}100%{transform:translateY(20px)}}
+  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://open.spotify.com">
+</head>
+<body>
+  <div class="wrap">
+    <div class="panel">
+      <div class="header">
+        <div>
+          <div class="title">Para cocinar juntos &lt;3 <span class="heart">♥</span></div>
+          <div class="desc">Un momento para dos</div>
+        </div>
+        <div class="actions">
+          <button class="btn" id="shareBtn">Compartir por WhatsApp</button>
+          <a class="btn secondary" href="https://open.spotify.com/playlist/6YyzGAphYrUjoPUXGS5h0d" target="_blank" rel="noopener">Abrir en Spotify</a>
+          <button class="btn ghost" id="downloadBtn">Descargar página</button>
+          <a class="btn secondary" href="https://github.com/new" target="_blank" rel="noopener">Subir a GitHub</a>
+        </div>
+      </div>
+      <iframe src="https://open.spotify.com/embed/playlist/6YyzGAphYrUjoPUXGS5h0d" height="600" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+      <div class="note">Coloca el archivo de la foto como <code>fondo.jpg</code> en esta carpeta para que aparezca de fondo.</div>
+    </div>
+  </div>
+  <div class="hearts"><span>♥</span><span>♥</span><span>♥</span><span>♥</span><span>♥</span></div>
+  <script>
+    const shareBtn=document.getElementById('shareBtn');
+    shareBtn.addEventListener('click',()=>{const url=location.href;const text='Para cocinar juntos <3 ' + url;const target='https://api.whatsapp.com/send?text='+encodeURIComponent(text);window.open(target,'_blank')});
+    const downloadBtn=document.getElementById('downloadBtn');
+    async function toDataUrl(u){try{const r=await fetch(u);if(!r.ok) return '';const b=await r.blob();const base64=await new Promise(res=>{const fr=new FileReader();fr.onload=()=>res(fr.result);fr.readAsDataURL(b)});return base64}catch(e){return ''}}
+    async function downloadPage(){let html=document.documentElement.outerHTML;const bg=await toDataUrl('fondo.jpg');if(bg){html=html.replace(/url\(['"]?fondo\.jpg['"]?\)/,'url("'+bg+'")')}const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([html],{type:'text/html'}));a.download='index.html';document.body.appendChild(a);a.click();URL.revokeObjectURL(a.href);a.remove()}
+    downloadBtn.addEventListener('click',downloadPage)
+  </script>
+  </body>
+  </html>
