@@ -19,7 +19,8 @@
     .title .heart{color:var(--accent)}
     .desc{font-family:"Great Vibes", cursive;font-size:24px;color:#ffd7df}
     .actions{display:flex;gap:8px}
-    .btn{appearance:none;border:0;border-radius:12px;padding:10px 14px;background:var(--accent);color:#1b0a0e;font-weight:700;cursor:pointer}
+    .btn{appearance:none;border:0;border-radius:12px;padding:10px 14px;background:var(--accent);color:#1b0a0e;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:8px}
+    .btn .ico{display:none}
     .btn.secondary{background:#1a1a1a;color:#fff;border:1px solid #2a2a2a;text-decoration:none;display:inline-flex;align-items:center}
     .btn.ghost{background:transparent;color:#fff;border:1px solid #2a2a2a}
     iframe{width:100%;border:0;border-radius:14px}
@@ -31,6 +32,28 @@
     .hearts span:nth-child(4){left:60%;animation-duration:11s;opacity:.2}
     .hearts span:nth-child(5){left:80%;animation-duration:13s;opacity:.17}
     @keyframes float{0%{transform:translateY(20px)}50%{transform:translateY(-8px)}100%{transform:translateY(20px)}}
+    @media (max-width: 600px){
+      .wrap{max-width:100%;padding:12px}
+      .panel{padding:12px;border-radius:14px}
+      .header{flex-direction:column;align-items:stretch;gap:10px;padding:0 0 8px}
+      .title{font-size:22px}
+      .desc{font-size:20px}
+      .actions{gap:10px;flex-wrap:wrap}
+      .btn{display:flex;flex-direction:column;align-items:center;justify-content:center;width:68px;min-height:84px;padding:8px;border-radius:12px;font-size:14px}
+      .btn .ico{display:block;font-size:22px}
+      .btn .txt{display:none}
+      .btn::after{content:attr(data-label);display:block;color:#fff;font-weight:600;opacity:.95;font-size:12px;margin-top:6px;text-align:center}
+      .btn.secondary{background:#1a1a1a}
+      .btn.ghost{background:transparent}
+      iframe{height:420px}
+      .hearts span{font-size:12px;opacity:.16}
+    }
+    @media (max-width: 360px){
+      .title{font-size:20px}
+      .desc{font-size:18px}
+      .btn{padding:7px 10px;font-size:13px}
+      iframe{height:380px}
+    }
   </style>
   <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
   <link rel="preconnect" href="https://open.spotify.com">
@@ -44,14 +67,13 @@
           <div class="desc">Un momento para dos</div>
         </div>
         <div class="actions">
-          <button class="btn" id="shareBtn">Compartir por WhatsApp</button>
-          <a class="btn secondary" href="https://open.spotify.com/playlist/6YyzGAphYrUjoPUXGS5h0d" target="_blank" rel="noopener">Abrir en Spotify</a>
-          <button class="btn ghost" id="downloadBtn">Descargar página</button>
-          <a class="btn secondary" href="https://github.com/new" target="_blank" rel="noopener">Subir a GitHub</a>
+          <button class="btn" id="shareBtn" aria-label="Compartir por WhatsApp" data-label="WhatsApp"><span class="ico">💬</span><span class="txt">Compartir por WhatsApp</span></button>
+          <a class="btn secondary" href="https://open.spotify.com/playlist/6YyzGAphYrUjoPUXGS5h0d" target="_blank" rel="noopener" aria-label="Abrir en Spotify" data-label="Spotify"><span class="ico">🎵</span><span class="txt">Abrir en Spotify</span></a>
+          <button class="btn ghost" id="downloadBtn" aria-label="Descargar página" data-label="Descargar"><span class="ico">⬇️</span><span class="txt">Descargar página</span></button>
+          <a class="btn secondary" href="https://github.com/new" target="_blank" rel="noopener" aria-label="Subir a GitHub" data-label="GitHub"><span class="ico">⬆️</span><span class="txt">Subir a GitHub</span></a>
         </div>
       </div>
       <iframe src="https://open.spotify.com/embed/playlist/6YyzGAphYrUjoPUXGS5h0d" height="600" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-      <div class="note">Coloca el archivo de la foto como <code>fondo.jpg</code> en esta carpeta para que aparezca de fondo.</div>
     </div>
   </div>
   <div class="hearts"><span>♥</span><span>♥</span><span>♥</span><span>♥</span><span>♥</span></div>
@@ -62,6 +84,13 @@
     async function toDataUrl(u){try{const r=await fetch(u);if(!r.ok) return '';const b=await r.blob();const base64=await new Promise(res=>{const fr=new FileReader();fr.onload=()=>res(fr.result);fr.readAsDataURL(b)});return base64}catch(e){return ''}}
     async function downloadPage(){let html=document.documentElement.outerHTML;const bg=await toDataUrl('fondo.jpg');if(bg){html=html.replace(/url\(['"]?fondo\.jpg['"]?\)/,'url("'+bg+'")')}const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([html],{type:'text/html'}));a.download='index.html';document.body.appendChild(a);a.click();URL.revokeObjectURL(a.href);a.remove()}
     downloadBtn.addEventListener('click',downloadPage)
+
+    const player=document.querySelector('iframe[src*="open.spotify.com/embed/playlist"]');
+    const baseSrc=player?player.getAttribute('src').split('?')[0]:'';
+    function refreshPlaylist(){if(!player||!baseSrc) return;player.src=baseSrc+'?t='+(Date.now())}
+    let autoRefreshTimer;function startAutoRefresh(){clearInterval(autoRefreshTimer);autoRefreshTimer=setInterval(refreshPlaylist,300000)}
+    startAutoRefresh();
+    document.addEventListener('visibilitychange',()=>{if(!document.hidden) refreshPlaylist()})
   </script>
   </body>
   </html>
